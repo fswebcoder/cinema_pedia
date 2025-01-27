@@ -16,7 +16,7 @@ class MoviedbMapper {
         popularity: movieMovieDb.popularity,
         posterPath: (movieMovieDb.posterPath != '')
             ? 'https://image.tmdb.org/t/p/w500/${movieMovieDb.posterPath}'
-            : 'https://www.smaroadsafety.com/wp-content/uploads/2022/06/no-pic.png',
+            : 'no-poster',
         releaseDate: movieMovieDb.releaseDate,
         title: movieMovieDb.title,
         video: movieMovieDb.video,
