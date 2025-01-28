@@ -21,7 +21,7 @@ class CustomAppbar extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              Text("Cinema", style: titleStyle),
+              Text("CINEMA", style: titleStyle),
               const Spacer(),
               IconButton(
                   onPressed: () {},
