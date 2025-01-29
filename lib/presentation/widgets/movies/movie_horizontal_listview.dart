@@ -1,8 +1,10 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
+import '../../../config/helpers/index.dart';
 import '../../../domain/entities/index.dart';
 
-class MovieHorizontalListview extends StatelessWidget {
+class MovieHorizontalListview extends StatefulWidget {
   final List<Movie> movies;
   final String? tittle;
   final String? sunTitle;
@@ -16,14 +18,113 @@ class MovieHorizontalListview extends StatelessWidget {
       this.loadNextPage});
 
   @override
+  State<MovieHorizontalListview> createState() =>
+      _MovieHorizontalListviewState();
+}
+
+class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
+  final scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (widget.loadNextPage == null) return;
+      if ((scrollController.position.pixels + 200) >=
+          scrollController.position.maxScrollExtent) {
+        widget.loadNextPage!();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 260,
+        height: 360,
         child: Column(
           children: [
-            if (tittle != null || sunTitle != null) _Tittle(tittle, sunTitle),
+            if (widget.tittle != null || widget.sunTitle != null)
+              _Tittle(widget.tittle, widget.sunTitle),
+            Expanded(
+              child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: widget.movies.length,
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return _Slide(movie: widget.movies[index]);
+                  }),
+            )
           ],
         ));
+  }
+}
+
+class _Slide extends StatelessWidget {
+  final Movie movie;
+  const _Slide({required this.movie});
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 150,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                width: 150,
+                movie.posterPath,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress != null) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    );
+                  }
+                  return FadeIn(child: child);
+                },
+              ),
+            ),
+          ),
+          const SizedBox(width: 150),
+          SizedBox(
+            width: 150,
+            child: Text(
+              movie.title,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: textStyle.titleSmall,
+            ),
+          ),
+          Row(
+            children: [
+              const Icon(Icons.star, size: 15, color: Colors.amber),
+              Text(
+                '${movie.voteAverage}',
+                style: textStyle.bodySmall?.copyWith(color: Colors.amber),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                HumanFormat.number(movie.popularity),
+                style: textStyle.bodySmall,
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -41,12 +41,22 @@ class MovieMovieDb {
         overview: json["overview"] ?? '',
         popularity: json["popularity"]?.toDouble(),
         posterPath: json["poster_path"] ?? '',
-        releaseDate: DateTime.parse(json["release_date"]),
+        releaseDate: json["release_date"] != null
+            ? _parseDate(json["release_date"])
+            : DateTime.now(),
         title: json["title"],
         video: json["video"],
         voteAverage: json["vote_average"]?.toDouble(),
         voteCount: json["vote_count"],
       );
+
+  static DateTime _parseDate(String dateStr) {
+    try {
+      return DateTime.parse(dateStr);
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "adult": adult,
