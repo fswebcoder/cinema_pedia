@@ -31,13 +31,20 @@ class _HomeViewState extends ConsumerState<_HomeView> {
     super.initState();
     ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
     ref.read(popularMoviesProvider.notifier).loadNextPage();
+    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
+    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
+    final initialLoadin = ref.watch(initialLoagingProvider);
+    if (initialLoadin) return FullScreenLoader();
+
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
     final slideShowMovies = ref.watch(moviesSliderShowProvider);
     final popularmoviesProvider = ref.watch(popularMoviesProvider);
+    final upcomingmoviesProvider = ref.watch(upcomingMoviesProvider);
+    final topratedMoviesProvider = ref.watch(topRatedMoviesProvider);
 
     return CustomScrollView(slivers: [
       const SliverAppBar(
@@ -66,6 +73,21 @@ class _HomeViewState extends ConsumerState<_HomeView> {
                   sunTitle: 'Este mes',
                   loadNextPage: () {
                     ref.read(popularMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListview(
+                  movies: upcomingmoviesProvider,
+                  tittle: 'Próximamente',
+                  sunTitle: 'Este mes',
+                  loadNextPage: () {
+                    ref.read(upcomingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MovieHorizontalListview(
+                  movies: topratedMoviesProvider,
+                  tittle: 'Mejor valoradas',
+                  loadNextPage: () {
+                    ref.read(topRatedMoviesProvider.notifier).loadNextPage();
                   },
                 ),
               ],
