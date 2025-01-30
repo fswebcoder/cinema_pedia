@@ -8,17 +8,24 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: HomeScreen.name,
-      builder: (context, state) => const HomeScreen(),
       pageBuilder: (context, state) {
-        return animationPage();
+        return animationPage(const HomeScreen());
+      },
+    ),
+    GoRoute(
+      path: '/movie/:id',
+      name: MovieScreen.name,
+      pageBuilder: (context, state) {
+        final id = state.pathParameters['id'] ?? 'No-id';
+        return animationPage(MovieScreen(movieId: id));
       },
     ),
   ],
 );
 
-CustomTransitionPage<dynamic> animationPage() {
+CustomTransitionPage<dynamic> animationPage(Widget child) {
   return CustomTransitionPage(
-    child: const HomeScreen(),
+    child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
         position: Tween<Offset>(

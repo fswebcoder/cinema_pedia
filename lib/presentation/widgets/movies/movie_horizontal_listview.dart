@@ -1,5 +1,7 @@
-import 'package:animate_do/animate_do.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../config/helpers/index.dart';
 import '../../../domain/entities/index.dart';
@@ -23,7 +25,7 @@ class MovieHorizontalListview extends StatefulWidget {
 }
 
 class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
-  final scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -46,24 +48,44 @@ class _MovieHorizontalListviewState extends State<MovieHorizontalListview> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 360,
-        child: Column(
-          children: [
-            if (widget.tittle != null || widget.sunTitle != null)
-              _Tittle(widget.tittle, widget.sunTitle),
-            Expanded(
-              child: ListView.builder(
+      height: 360,
+      child: Column(
+        children: [
+          if (widget.tittle != null || widget.sunTitle != null)
+            _Tittle(widget.tittle, widget.sunTitle),
+          Expanded(
+            child: Listener(
+              onPointerSignal: (event) {
+                if (event is PointerScrollEvent) {
+                  scrollController.jumpTo(
+                    scrollController.offset + event.scrollDelta.dy,
+                  );
+                }
+              },
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.mouse,
+                    PointerDeviceKind.touch,
+                  },
+                ),
+                child: ListView.builder(
                   controller: scrollController,
                   itemCount: widget.movies.length,
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
                     return FadeInRight(
-                        child: _Slide(movie: widget.movies[index]));
-                  }),
-            )
-          ],
-        ));
+                      child: _Slide(movie: widget.movies[index]),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -94,7 +116,10 @@ class _Slide extends StatelessWidget {
                       ),
                     );
                   }
-                  return FadeIn(child: child);
+                  return GestureDetector(
+                    onTap: () => context.push('/movie/${movie.id}'),
+                    child: FadeIn(child: child),
+                  );
                 },
               ),
             ),
