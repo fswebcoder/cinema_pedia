@@ -6,20 +6,21 @@ final appRouter = GoRouter(
   initialLocation: '/', // Ruta inicial
   routes: [
     GoRoute(
-      path: '/',
-      name: HomeScreen.name,
-      pageBuilder: (context, state) {
-        return animationPage(const HomeScreen());
-      },
-    ),
-    GoRoute(
-      path: '/movie/:id',
-      name: MovieScreen.name,
-      pageBuilder: (context, state) {
-        final id = state.pathParameters['id'] ?? 'No-id';
-        return animationPage(MovieScreen(movieId: id));
-      },
-    ),
+        path: '/',
+        name: HomeScreen.name,
+        pageBuilder: (context, state) {
+          return animationPage(const HomeScreen());
+        },
+        routes: [
+          GoRoute(
+            path: 'movie/:id',
+            name: MovieScreen.name,
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id'] ?? 'No-id';
+              return animationPage(MovieScreen(movieId: id));
+            },
+          ),
+        ]),
   ],
 );
 

@@ -46,6 +46,18 @@ class MoviedbDatasource extends MoviesDatasource {
     return _jsonToMovies(response);
   }
 
+  @override
+  Future<Movie> getMovieById(String id) async {
+    final response = await dio.get('movie/${id})');
+    if (response.statusCode != 200) {
+      throw Exception('Movie with id $id not found');
+    }
+
+    final movieDetails = MovieDetails.fromJson(response.data);
+    final Movie movie = MoviedbMapper.movieDetailToEntity(movieDetails);
+    return movie;
+  }
+
   List<Movie> _jsonToMovies(Response<dynamic> response) {
     final movieDbResponse = MovieDbResponse.fromJson(response.data);
     final List<Movie> movies = movieDbResponse.results
